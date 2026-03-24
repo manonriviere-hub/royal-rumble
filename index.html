@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Rumble – Stratégie 30%</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:#3B82F6;--blue-light:#60A5FA;--blue-dim:#1D4ED8;
+    --bg:#0D1117;--bg2:#161B27;--bg3:#1E2535;
+    --border:rgba(59,130,246,0.14);--border2:rgba(255,255,255,0.06);
+    --text:#F0F4FF;--muted:#6B7280;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
+    background-size:64px 64px;pointer-events:none;z-index:0;
+  }
+  body::after{
+    content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);
+    width:800px;height:400px;
+    background:radial-gradient(ellipse,rgba(59,130,246,0.07) 0%,transparent 70%);
+    pointer-events:none;z-index:0;
+  }
+  .container{max-width:880px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+
+  header{padding:64px 0 36px;text-align:center;}
+  .badge-dates{
+    display:inline-block;border:1px solid rgba(59,130,246,0.4);color:var(--blue-light);
+    font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+    padding:6px 18px;border-radius:100px;margin-bottom:28px;background:rgba(59,130,246,0.06);
+  }
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,12vw,108px);letter-spacing:0.03em;line-height:0.88;margin-bottom:10px;}
+  h1 span{color:var(--blue);}
+  .subtitle{font-size:13px;color:var(--muted);letter-spacing:0.14em;text-transform:uppercase;}
+
+  .countdown-bar{display:flex;justify-content:center;gap:10px;margin:36px 0 52px;}
+  .countdown-unit{
+    display:flex;flex-direction:column;align-items:center;
+    background:var(--bg2);border:1px solid var(--border);
+    padding:14px 22px;border-radius:8px;min-width:76px;
+  }
+  .countdown-num{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--blue);line-height:1;}
+  .countdown-label{font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+  .podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:44px;}
+  .podium-card{
+    flex:1;max-width:230px;background:var(--bg2);border:1px solid var(--border2);
+    padding:24px 16px 20px;text-align:center;border-radius:10px;
+    transition:transform 0.25s,border-color 0.25s;position:relative;
+  }
+  .podium-card:hover{transform:translateY(-6px);}
+  .podium-card.first{border-color:rgba(59,130,246,0.45);background:linear-gradient(180deg,rgba(59,130,246,0.1) 0%,var(--bg2) 60%);padding-top:36px;}
+  .podium-card.second{border-color:rgba(255,255,255,0.1);}
+  .podium-card.third{border-color:rgba(255,255,255,0.07);}
+  .podium-rank{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;margin-bottom:6px;}
+  .first .podium-rank{color:var(--blue);}
+  .second .podium-rank{color:#94A3B8;}
+  .third .podium-rank{color:#64748B;}
+  .podium-name{font-size:15px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .podium-ca{font-size:22px;font-weight:700;color:var(--blue-light);margin-bottom:2px;}
+  .podium-sales{font-size:11px;color:var(--muted);}
+  .podium-skool{
+    display:inline-block;margin-top:10px;font-size:10px;color:var(--muted);
+    border:1px solid var(--border2);padding:3px 10px;border-radius:100px;
+    text-decoration:none;transition:all 0.2s;
+  }
+  .podium-skool:hover{color:var(--blue-light);border-color:rgba(59,130,246,0.4);}
+  .crown{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:24px;}
+
+  .section-title{
+    font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border2);
+  }
+
+  .leaderboard-table{width:100%;border-collapse:collapse;margin-bottom:52px;}
+  .leaderboard-table th{
+    font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--muted);text-align:left;padding:10px 14px;
+    border-bottom:1px solid var(--border2);font-weight:400;
+  }
+  .leaderboard-table th:last-child{text-align:right;}
+  .leaderboard-table td{padding:14px;border-bottom:1px solid var(--border2);font-size:14px;vertical-align:middle;}
+  .leaderboard-table tr:last-child td{border-bottom:none;}
+  .leaderboard-table tr:hover td{background:rgba(59,130,246,0.03);}
+  .rank-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--muted);width:40px;}
+  .rank-num.top3{color:var(--blue);}
+  .participant-name{font-weight:500;}
+  .participant-ca{font-weight:700;font-size:15px;text-align:right;color:var(--blue-light);}
+  .participant-sales{font-size:12px;color:var(--muted);text-align:right;}
+  .skool-link{
+    font-size:11px;color:var(--muted);text-decoration:none;
+    border:1px solid var(--border2);padding:3px 10px;border-radius:100px;
+    transition:all 0.2s;white-space:nowrap;
+  }
+  .skool-link:hover{color:var(--blue-light);border-color:rgba(59,130,246,0.4);}
+  .bar-wrap{width:100%;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:5px;}
+  .bar-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 1.2s ease;}
+
+  .rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:52px;}
+  @media(max-width:600px){.rules-grid{grid-template-columns:1fr;}}
+  .rule-card{background:var(--bg2);border:1px solid var(--border2);padding:22px;border-radius:10px;}
+  .rule-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:rgba(59,130,246,0.2);line-height:1;margin-bottom:8px;}
+  .rule-title{font-size:13px;font-weight:700;margin-bottom:6px;}
+  .rule-desc{font-size:12px;color:var(--muted);line-height:1.7;}
+  .rule-code{
+    margin-top:10px;background:var(--bg3);border:1px solid var(--border);
+    padding:8px 12px;border-radius:6px;font-size:11px;color:var(--blue-light);
+    font-family:monospace;letter-spacing:0.04em;
+  }
+
+  .empty-state{text-align:center;padding:64px 20px;color:var(--muted);}
+  .empty-state .big{font-family:'Bebas Neue',sans-serif;font-size:52px;color:rgba(59,130,246,0.15);}
+  .empty-state p{margin-top:10px;font-size:13px;}
+
+  footer{border-top:1px solid var(--border2);padding:24px 0;text-align:center;font-size:11px;color:var(--muted);margin-top:20px;}
+  .last-update{color:rgba(59,130,246,0.5);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .animate{animation:fadeUp 0.55s ease forwards;}
+  .d1{animation-delay:0.05s;opacity:0;}
+  .d2{animation-delay:0.15s;opacity:0;}
+  .d3{animation-delay:0.25s;opacity:0;}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="animate">
+    <div class="badge-dates">1er avril → 30 juin 2025</div>
+    <h1>ROYAL<br><span>RUMBLE</span></h1>
+    <p class="subtitle">Stratégie 30% &nbsp;—&nbsp; Concours de performance</p>
+  </header>
+
+  <div class="countdown-bar animate d1" id="countdown">
+    <div class="countdown-unit"><div class="countdown-num" id="cd-j">--</div><div class="countdown-label">Jours</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cd-h">--</div><div class="countdown-label">Heures</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cd-m">--</div><div class="countdown-label">Min</div></div>
+    <div class="countdown-unit"><div class="countdown-num" id="cd-s">--</div><div class="countdown-label">Sec</div></div>
+  </div>
+
+  <div class="animate d2" id="podium-section"></div>
+  <div class="animate d3" id="table-section"></div>
+
+  <p class="section-title">Règles du concours</p>
+  <div class="rules-grid">
+    <div class="rule-card"><div class="rule-num">01</div><div class="rule-title">Déclarer chaque vente</div><div class="rule-desc">Poster dans Skool → catégorie WIN. Une vente = un post avec preuve le jour même.</div><div class="rule-code">[CONCOURS] – XX XXX € – JJ/MM/AAAA</div></div>
+    <div class="rule-card"><div class="rule-num">02</div><div class="rule-title">Preuves acceptées</div><div class="rule-desc">Screenshot Stripe, Whop ou virement uniquement. Les récapitulatifs hebdomadaires ne sont pas acceptés.</div></div>
+    <div class="rule-card"><div class="rule-num">03</div><div class="rule-title">Être à jour</div><div class="rule-desc">Paiements à jour et respect du process de déclaration obligatoires pour participer.</div></div>
+    <div class="rule-card"><div class="rule-num">04</div><div class="rule-title">Vérification finale</div><div class="rule-desc">Le gagnant passe un appel de vérification : contrôle Stripe et Whop pour confirmer les résultats.</div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Stratégie 30% &nbsp;·&nbsp;
+    <span class="last-update">Mise à jour : <span id="last-update-date">—</span></span>
+    &nbsp;·&nbsp;
+    <a href="admin.html" style="color:var(--muted);text-decoration:none;font-size:10px;opacity:0.3;">admin</a>
+  </div>
+</footer>
+
+<script>
+const DATA_KEY='royalrumble_data';
+function getData(){try{const r=localStorage.getItem(DATA_KEY);return r?JSON.parse(r):{participants:[],lastUpdate:null};}catch{return{participants:[],lastUpdate:null};}}
+function formatCA(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);}
+
+function updateCountdown(){
+  const end=new Date('2025-06-30T23:59:59'),now=new Date(),diff=end-now;
+  if(diff<=0){document.getElementById('countdown').innerHTML='<div style="font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:var(--blue);letter-spacing:0.1em;">CONCOURS TERMINÉ</div>';return;}
+  const j=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-j').textContent=String(j).padStart(2,'0');
+  document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+}
+setInterval(updateCountdown,1000);updateCountdown();
+
+function render(){
+  const{participants,lastUpdate}=getData();
+  const sorted=[...participants].sort((a,b)=>b.ca-a.ca);
+  const maxCA=sorted[0]?.ca||1;
+  const podiumEl=document.getElementById('podium-section');
+  if(sorted.length===0){
+    podiumEl.innerHTML=`<div class="empty-state"><div class="big">⚔️</div><p>Le classement s'affichera dès les premières ventes déclarées.</p></div>`;
+  } else {
+    const top=sorted.slice(0,3);
+    const order=top.length>=3?[top[1],top[0],top[2]]:[top[0]];
+    const classes=top.length>=3?['second','first','third']:['first'];
+    const ranks=top.length>=3?['2','1','3']:['1'];
+    podiumEl.innerHTML=`<p class="section-title" style="margin-bottom:18px">Podium</p><div class="podium">${order.map((p,i)=>p?`<div class="podium-card ${classes[i]}">${classes[i]==='first'?'<div class="crown">🏆</div>':''}<div class="podium-rank">${ranks[i]}</div><div class="podium-name">${p.nom}</div><div class="podium-ca">${formatCA(p.ca)}</div><div class="podium-sales">${p.ventes} vente${p.ventes>1?'s':''}</div>${p.skool?`<a href="${p.skool}" target="_blank" class="podium-skool">Profil Skool ↗</a>`:''}</div>`:'').join('')}</div>`;
+  }
+  const tableEl=document.getElementById('table-section');
+  if(sorted.length>0){
+    tableEl.innerHTML=`<p class="section-title">Classement complet</p><table class="leaderboard-table"><thead><tr><th>#</th><th>Participant</th><th>Profil</th><th style="text-align:right">Ventes</th><th style="text-align:right">CA encaissé</th></tr></thead><tbody>${sorted.map((p,i)=>`<tr><td><div class="rank-num ${i<3?'top3':''}">${i+1}</div></td><td><div class="participant-name">${p.nom}</div><div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(p.ca/maxCA*100)}%"></div></div></td><td>${p.skool?`<a href="${p.skool}" target="_blank" class="skool-link">Skool ↗</a>`:'<span style="color:var(--muted);font-size:11px">—</span>'}</td><td class="participant-sales">${p.ventes}</td><td class="participant-ca">${formatCA(p.ca)}</td></tr>`).join('')}</tbody></table>`;
+  }
+  if(lastUpdate){document.getElementById('last-update-date').textContent=new Date(lastUpdate).toLocaleDateString('fr-FR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});}
+}
+render();
+</script>
+</body>
+</html>
