@@ -6,38 +6,26 @@
 <title>Admin — Royal Rumble</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{
-    --blue:#3B82F6;--blue-light:#60A5FA;
-    --bg:#0D1117;--bg2:#161B27;--bg3:#1E2535;
-    --border:rgba(59,130,246,0.14);--border2:rgba(255,255,255,0.06);
-    --text:#F0F4FF;--muted:#6B7280;--danger:#EF4444;
-  }
+  :root{--blue:#3B82F6;--blue-light:#60A5FA;--bg:#0D1117;--bg2:#161B27;--bg3:#1E2535;--border:rgba(59,130,246,0.14);--border2:rgba(255,255,255,0.06);--text:#F0F4FF;--muted:#6B7280;--danger:#EF4444;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-  body::before{
-    content:'';position:fixed;inset:0;
-    background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
-    background-size:64px 64px;pointer-events:none;z-index:0;
-  }
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0;}
   .container{max-width:760px;margin:0 auto;padding:40px 24px;position:relative;z-index:1;}
 
   #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;}
   .login-box{background:var(--bg2);border:1px solid var(--border);padding:40px;width:100%;max-width:360px;text-align:center;border-radius:12px;}
-  .login-box h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue);margin-bottom:24px;letter-spacing:0.05em;}
+  .login-box h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue);margin-bottom:24px;}
 
   label{display:block;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-  input,select{
-    width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);
-    padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;
-    transition:border-color 0.2s;border-radius:6px;
-  }
+  input,select{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;border-radius:6px;}
   input:focus,select:focus{border-color:rgba(59,130,246,0.5);}
   .field{margin-bottom:16px;}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   @media(max-width:500px){.grid2{grid-template-columns:1fr;}}
 
-  .btn{padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.04em;cursor:pointer;border:none;transition:opacity 0.2s;border-radius:6px;}
+  .btn{padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:opacity 0.2s;border-radius:6px;}
   .btn:hover{opacity:0.85;}
   .btn-blue{background:var(--blue);color:#fff;}
   .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--muted);}
@@ -46,7 +34,7 @@
   .btn-full{width:100%;}
 
   .admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid var(--border2);}
-  .admin-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);letter-spacing:0.04em;}
+  .admin-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);}
 
   .section{background:var(--bg2);border:1px solid var(--border2);padding:24px;margin-bottom:20px;border-radius:10px;}
   .section-head{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border2);}
@@ -119,7 +107,7 @@
 
     <div class="section">
       <div class="section-head">Participants & ventes</div>
-      <div id="participants-list"></div>
+      <div id="participants-list"><p style="color:var(--muted);font-size:13px">Chargement...</p></div>
     </div>
 
     <div class="section" style="border-color:rgba(239,68,68,0.2)">
@@ -133,12 +121,14 @@
 <div id="toast"></div>
 
 <script>
-const PASSWORD='strategie30admin';
-const DATA_KEY='royalrumble_data';
+const SUPABASE_URL = 'https://yqgwgdyzvzuloretfjah.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Ah2JLxpAPA51XTMtK2RkjQ_OC5ASKbu';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const PASSWORD = 'strategie30admin';
 
 function login(){
-  const pwd=document.getElementById('pwd-input').value;
-  if(pwd===PASSWORD){
+  if(document.getElementById('pwd-input').value === PASSWORD){
     document.getElementById('login-screen').style.display='none';
     document.getElementById('admin-panel').style.display='block';
     renderAdmin();
@@ -152,82 +142,86 @@ function logout(){
   document.getElementById('pwd-input').value='';
 }
 
-function getData(){try{const r=localStorage.getItem(DATA_KEY);return r?JSON.parse(r):{participants:[],lastUpdate:null};}catch{return{participants:[],lastUpdate:null};}}
-function saveData(d){d.lastUpdate=new Date().toISOString();localStorage.setItem(DATA_KEY,JSON.stringify(d));}
 function formatCA(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-function addParticipant(){
+async function addParticipant(){
   const nom=document.getElementById('new-nom').value.trim();
   if(!nom){alert('Le nom est obligatoire');return;}
-  const data=getData();
-  data.participants.push({id:Date.now(),nom,skool:document.getElementById('new-skool').value.trim(),statut:document.getElementById('new-statut').value,ventes:0,ca:0,historique:[]});
-  saveData(data);
+  const{error}=await sb.from('participants').insert({
+    nom,
+    skool:document.getElementById('new-skool').value.trim(),
+    statut:document.getElementById('new-statut').value,
+    ventes:0, ca:0, historique:[]
+  });
+  if(error){alert('Erreur : '+error.message);return;}
   document.getElementById('new-nom').value='';
   document.getElementById('new-skool').value='';
   renderAdmin();toast('Participant ajouté ✓');
 }
 
-function deleteParticipant(id){
+async function deleteParticipant(id){
   if(!confirm('Supprimer ce participant ?'))return;
-  const data=getData();
-  data.participants=data.participants.filter(p=>p.id!==id);
-  saveData(data);renderAdmin();toast('Participant supprimé');
+  await sb.from('participants').delete().eq('id',id);
+  renderAdmin();toast('Participant supprimé');
 }
 
-function toggleStatut(id){
-  const data=getData();
-  const p=data.participants.find(p=>p.id===id);
-  if(p)p.statut=p.statut==='eligible'?'hors':'eligible';
-  saveData(data);renderAdmin();
+async function toggleStatut(id, currentStatut){
+  const newStatut = currentStatut==='eligible'?'hors':'eligible';
+  await sb.from('participants').update({statut:newStatut}).eq('id',id);
+  renderAdmin();
 }
 
 function toggleVenteForm(id){
   document.getElementById('vente-form-'+id).classList.toggle('open');
 }
 
-function addVente(id){
+async function addVente(id){
   const montantInput=document.getElementById('vente-montant-'+id);
   const dateInput=document.getElementById('vente-date-'+id);
   const montant=parseFloat(montantInput.value.replace(',','.'));
   if(!montant||montant<=0){alert('Montant invalide');return;}
-  const data=getData();
-  const p=data.participants.find(p=>p.id===id);
+
+  const{data:p}=await sb.from('participants').select('*').eq('id',id).single();
   if(!p)return;
+
   const date=dateInput.value||new Date().toISOString().split('T')[0];
-  p.historique.push({montant,date,id:Date.now()});
-  p.ca=p.historique.reduce((s,v)=>s+v.montant,0);
-  p.ventes=p.historique.length;
-  saveData(data);montantInput.value='';
+  const historique=[...(p.historique||[]),{montant,date,id:Date.now()}];
+  const ca=historique.reduce((s,v)=>s+v.montant,0);
+  const ventes=historique.length;
+
+  await sb.from('participants').update({historique,ca,ventes}).eq('id',id);
+  montantInput.value='';
   renderAdmin();toast(`+${formatCA(montant)} ajouté pour ${p.nom} ✓`);
 }
 
-function deleteVente(participantId,venteId){
-  const data=getData();
-  const p=data.participants.find(p=>p.id===participantId);
+async function deleteVente(participantId, venteId){
+  const{data:p}=await sb.from('participants').select('*').eq('id',participantId).single();
   if(!p)return;
-  p.historique=p.historique.filter(v=>v.id!==venteId);
-  p.ca=p.historique.reduce((s,v)=>s+v.montant,0);
-  p.ventes=p.historique.length;
-  saveData(data);renderAdmin();toast('Vente supprimée');
+  const historique=(p.historique||[]).filter(v=>v.id!==venteId);
+  const ca=historique.reduce((s,v)=>s+v.montant,0);
+  const ventes=historique.length;
+  await sb.from('participants').update({historique,ca,ventes}).eq('id',participantId);
+  renderAdmin();toast('Vente supprimée');
 }
 
-function resetAll(){
+async function resetAll(){
   if(!confirm('⚠️ Supprimer TOUTES les données ? Action irréversible.'))return;
-  localStorage.removeItem(DATA_KEY);renderAdmin();toast('Données réinitialisées');
+  await sb.from('participants').delete().neq('id',0);
+  renderAdmin();toast('Données réinitialisées');
 }
 
-function renderAdmin(){
-  const{participants}=getData();
-  const sorted=[...participants].sort((a,b)=>b.ca-a.ca);
-  const totalCA=participants.reduce((s,p)=>s+p.ca,0);
-  const totalVentes=participants.reduce((s,p)=>s+p.ventes,0);
+async function renderAdmin(){
+  const{data:participants}=await sb.from('participants').select('*').order('ca',{ascending:false});
+  const sorted=participants||[];
+  const totalCA=sorted.reduce((s,p)=>s+p.ca,0);
+  const totalVentes=sorted.reduce((s,p)=>s+p.ventes,0);
 
   document.getElementById('stats-row').innerHTML=`
-    <div class="stat-box"><div class="stat-num">${participants.length}</div><div class="stat-label">Participants</div></div>
+    <div class="stat-box"><div class="stat-num">${sorted.length}</div><div class="stat-label">Participants</div></div>
     <div class="stat-box"><div class="stat-num">${totalVentes}</div><div class="stat-label">Ventes</div></div>
     <div class="stat-box"><div class="stat-num">${formatCA(totalCA)}</div><div class="stat-label">CA total</div></div>
-    <div class="stat-box"><div class="stat-num">${participants.filter(p=>p.statut==='eligible').length}</div><div class="stat-label">Éligibles</div></div>
+    <div class="stat-box"><div class="stat-num">${sorted.filter(p=>p.statut==='eligible').length}</div><div class="stat-label">Éligibles</div></div>
   `;
 
   const list=document.getElementById('participants-list');
@@ -240,7 +234,7 @@ function renderAdmin(){
           <span style="color:var(--muted);font-size:13px;margin-right:8px">#${i+1}</span>${p.nom}
           ${p.statut==='eligible'?'<span class="tag-eligible">éligible</span>':'<span class="tag-hors">hors concours</span>'}
         </div>
-        <div class="p-meta">${p.skool?`<a href="${p.skool}" target="_blank" style="color:var(--muted);font-size:11px">${p.skool.substring(0,40)}…</a>`:'Pas de lien Skool'}</div>
+        <div class="p-meta">${p.skool?`<a href="${p.skool}" target="_blank" style="color:var(--muted);font-size:11px">${p.skool.substring(0,40)}</a>`:'Pas de lien Skool'}</div>
       </div>
       <div style="text-align:right">
         <div class="p-ca">${formatCA(p.ca)}</div>
@@ -248,7 +242,7 @@ function renderAdmin(){
       </div>
       <div class="p-actions">
         <button class="btn btn-blue btn-sm" onclick="toggleVenteForm(${p.id})">+ Vente</button>
-        <button class="btn btn-outline btn-sm" onclick="toggleStatut(${p.id})">Statut</button>
+        <button class="btn btn-outline btn-sm" onclick="toggleStatut(${p.id},'${p.statut}')">Statut</button>
         <button class="btn btn-danger btn-sm" onclick="deleteParticipant(${p.id})">✕</button>
       </div>
       <div style="width:100%">
@@ -258,10 +252,10 @@ function renderAdmin(){
             <div class="field" style="margin:0;flex:1;min-width:140px"><label>Date</label><input type="date" id="vente-date-${p.id}" value="${new Date().toISOString().split('T')[0]}"></div>
             <button class="btn btn-blue" onclick="addVente(${p.id})">Valider</button>
           </div>
-          ${p.historique.length>0?`
+          ${(p.historique||[]).length>0?`
           <div style="margin-top:12px;border-top:1px solid var(--border2);padding-top:12px">
             <div style="font-size:10px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Historique</div>
-            ${p.historique.map(v=>`
+            ${(p.historique||[]).map(v=>`
               <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
                 <span style="font-size:13px;color:var(--blue-light)">${formatCA(v.montant)}</span>
                 <span style="font-size:11px;color:var(--muted)">${new Date(v.date).toLocaleDateString('fr-FR')}</span>
